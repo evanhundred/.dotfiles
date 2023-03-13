@@ -1,0 +1,382 @@
+  ; ⌂mod via Mod-Tap Layer v0.6
+  ; C A G S  S G A C
+  ; ⎈⎇ ◆⇧  ⇧ ◆⎇ ⎈
+  ; a s d f  j k l ;
+  ; supports 2-key combos of ⎇◆⇧, and ⎈⇧
+  ; FR can't set multiple conditions to the rules, so need to set 2nd/3rd to each key
+    ; https://github.com/yqrashawn/GokuRakuJoudo/issues/133
+
+; based on https://github.com/gabriel-gardner/modtap-karabiner/blob/main/modtap_example.edn
+  ; if held longer than the tapping term (to_if_alone_timeout_milliseconds) becomes a modifier on any other keys that you setup rules for
+  ; if interrupted before just outputs both keys like they were typed regularly
+  ; far more accurate than trying to use from.simultaneous as it would accidentally trigger when typing quickly
+; goku tips
+  ; C T O S → left_command  left_control  left_option left_shift
+  ; Q W E R → right_command right_control right_option right_shift
+  ; !!      → hyper (left_command + left_control + left_option + left_shift)
+  ; #optional ##optional any !mandatory
+
+{:profiles {:goku {
+  :default true ;↓ delays can be set individually in mod-tap layer definitions if you want separate default values here
+  :sim  	 50	; |  50|	simultaneous_threshold_milliseconds   	different from simlayers, this is for cases like [:a :b]
+  :alone	209	; |1000|	to_if_alone_timeout_milliseconds      	??? must be < than ↓:delay/:held to avoid the bug where mod-tap layer stays 1
+  :held 	210	; | 500|	to_if_held_down_threshold_milliseconds	should = ↓:delay for mod-tap layers
+  :delay	210	; |    |	to_delayed_action_delay_milliseconds  	should = ↑:held  for mod-tap layers
+  }}
+:input-sources {
+  :en {:input_source_id "^org\\.sil\\.ukelele\\.keyboardlayout\\.t\\.english—types$" :language "en"}
+  :ru {:input_source_id "^org\\.sil\\.ukelele\\.keyboardlayout\\.t\\.russian—types$" :language "ru"}
+  }
+:templates {
+  :notify "osascript -e 'display notification \"%s\"'"
+  :echok  "osascript -e 'display notification \"Pressed %s\"'"
+  }
+
+:main [
+; modifications to the ⌂mods
+{:des "  holdF+Backspace to Delete: l⌂⇧⌫ ⟶ ⌦" :rules [ :mode_f
+  [:##delete_or_backspace :delete_forward] [:##backslash :delete_forward]
+  ]}
+
+{:des "  [⌂⇧] Ru holdJ+§,1–4,6–7 to En: 🇷🇺holdJ≈🇺🇸L⇧; r⌂⇧+1–4,6–7 ⟶ ⌃⌥1–4,6–7 (@'Russian — TypES' mapped to en⇧) r⌂⇧§ ⟶ ⇧`" :rules [ :mode_j
+ ; ↑ should be higher than "  [⌂⇧] holdJ to RShift: holdJ ⟶ r⇧" to take priority
+  [:1 :!R1  [:en]] [:2 :!R2  [:en]] [:3 :!R3  [:en]] [:4 :!R4  [:en]] [:6 :!R6  [:en]] [:7 :!R7  [:en]]
+  [:1 :!TO1 [:ru]] [:2 :!TO2 [:ru]] [:3 :!TO3 [:ru]] [:4 :!TO4 [:ru]] [:6 :!TO6 [:ru]] [:7 :!TO7 [:ru]]
+  [:non_us_backslash :!Rnon_us_backslash       [:en]]
+  [:non_us_backslash :!Rgrave_accent_and_tilde [:ru]]
+  ]}
+
+{:des "single tap left shift to esc" :rules [
+  [:left_shift :left_shift nil {:alone :escape}]
+]}
+
+
+
+{:des " holdAS to option + mod " :rules [ :mode_s
+  [:h :!Oleft_arrow [:mode_a]] [:j :!Odown_arrow [:mode_a]] [:k :!Oup_arrow [:mode_a]] [:l :!Oright_arrow [:mode_a]]
+]}
+;; {:des "  [⌂⎈⌘] holdAD to a_mode + LCommand: holdAD ⟶ a⌘ (AD=DA)" :rules [ :mode_a
+;;   [:h :!TCleft_arrow [:mode_d]] [:j :!TCdown_arrow [:mode_d]] [:k :!TCup_arrow [:mode_d]] [:l :!TCright_arrow [:mode_d]]
+;;   ]}
+
+;; {:des "universal a-layer hjkl to nav override" :rules [ :mode_a
+;;   [:##h :left_arrow]
+;;   [:##j :down_arrow]
+;;   [:##k :up_arrow]
+;;   [:##l :right_arrow]
+;;   [:##f :left_shift]
+;; ]}
+
+;; {:des "  [⌂⎈⌘] holdAD to a_mode + LCommand: holdAD ⟶ a⌘ (AD=DA)" :rules [ :mode_d
+;;   [:h :!Cleft_arrow [:mode_a]] [:j :!Cdown_arrow [:mode_a]] [:k :!Cup_arrow [:mode_a]] [:l :!Cright_arrow [:mode_a]]
+;;  }
+
+
+; caps to control, shift caps to caps
+
+{:des "caps to lControl; shift + caps to caps" :rules [
+  [:caps_lock :left_control] [:!Scaps_lock :caps_lock]
+]}
+
+; TODO - integrate mouse clicks with home row layers
+;  - integrate chords like command arrow keys, control command arrow keys, control option command arrow, option arrow
+;  - integrate layers with mouse click, command click?
+
+
+{:des "  [⌂] mod-tap layers (asdf jkl;)" :rules [ ; When adding a new layer, if you want it to be able to cross with an old one, you must add the name negated (:!new_name) to all other mod-tap layer conditions
+  ; remove these negations to allow mod key combos
+    ; ⎇◆  (⌥⌘) sd and lk
+    ; ⇧⎇        sf and jl
+    ; ⇧◆  (⇧⌘) fd and jk
+    ; ⇧⎈  (⇧^) fa and jsc
+  [:a nil [                    :!mode_j :!mode_k :!mode_l :!mod_sc] ;mode_a
+   {:alone {:key :a :halt true} :delayed {:canceled {:key :a}} :held {:set["mode_a" 1] :repeat false} :afterup {:set["mode_a" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:s nil [                            :!mode_j :!mode_k :!mode_l :!mod_sc] ;mode_s
+   {:alone {:key :s :halt true} :delayed {:canceled {:key :s}} :held {:set["mode_s" 1] :repeat false} :afterup {:set["mode_s" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:d nil [                            :!mode_j :!mode_k :!mode_l :!mod_sc] ;mode_d
+   {:alone {:key :d :halt true} :delayed {:canceled {:key :d}} :held {:set["mode_d" 1] :repeat false} :afterup {:set["mode_d" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:f nil [                                    :!mode_j :!mode_k :!mode_l :!mod_sc] ;mode_f
+   {:alone {:key :f :halt true} :delayed {:canceled {:key :f}} :held {:set["mode_f" 1] :repeat false} :afterup {:set["mode_f" 0]}
+    :params {:alone 100 :held 101 :delay 101} }]
+  [:j nil [:!mode_a :!mode_s :!mode_d :!mode_f                                    ] ;mode_j
+   {:alone {:key :j :halt true} :delayed {:canceled {:key :j}} :held {:set["mode_j" 1] :repeat false} :afterup {:set["mode_j" 0]}
+    :params {:alone 100 :held 101 :delay 101} }]
+  [:k nil [:!mode_a :!mode_s :!mode_d :!mode_f                            :!mod_sc] ;mode_k
+   {:alone {:key :k :halt true} :delayed {:canceled {:key :k}} :held {:set["mode_k" 1] :repeat false} :afterup {:set["mode_k" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:l nil [:!mode_a :!mode_s :!mode_d :!mode_f                            :!mod_sc] ;mode_l
+   {:alone {:key :l :halt true} :delayed {:canceled {:key :l}} :held {:set["mode_l" 1] :repeat false} :afterup {:set["mode_l" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:semicolon nil [:!mode_a :!mode_s :!mode_d :!mode_f          :!mode_k :!mode_l         ] ;mod_sc
+   {:alone {:key :semicolon :halt true} :delayed {:canceled {:key :semicolon}} :held {:set["mod_sc" 1] :repeat false} :afterup {:set["mod_sc" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+
+  [:v nil [:!mode_a :!mode_s :!mode_d :!mode_f                   ] ;mode_v
+   {:alone {:key :v :halt true} :delayed {:canceled {:key :v}} :held {:set["mode_v" 1] :repeat false} :afterup {:set["mode_v" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:c nil [:!mode_a :!mode_s :!mode_d :!mode_f                   ] ;mode_c
+   {:alone {:key :c :halt true} :delayed {:canceled {:key :c}} :held {:set["mode_c" 1] :repeat false} :afterup {:set["mode_c" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:n nil [:!mode_j :!mode_k :!mode_l :!mod_sc                   ] ;mode_n
+   {:alone {:key :n :halt true} :delayed {:canceled {:key :n}} :held {:set["mode_n" 1] :repeat false} :afterup {:set["mode_n" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  [:m nil [:!mode_j :!mode_k :!mode_l :!mod_sc                   ] ;mode_m
+   {:alone {:key :m :halt true} :delayed {:canceled {:key :m}} :held {:set["mode_m" 1] :repeat false} :afterup {:set["mode_m" 0]}
+    :params {:alone 194 :held 195 :delay 195} }]
+  ]}
+
+
+
+;;; Combinations of home row mods
+
+
+
+
+{:des "  [⌂⌥⌘] holdSD to LAlt+LCmd: holdSD ⟶ l⌥⌘ (SD=DS)" :rules [ :mode_s
+  ; →Right half types ⌥⌘Key (also mod key isn't swallowed)
+  [:6 :!OC6 [:mode_d]] [:7 :!OC7 [:mode_d]] [:8 :!OC8 [:mode_d]] [:9 :!OC9 [:mode_d]] [:0 :!OC0 [:mode_d]] [:hyphen :!OChyphen [:mode_d]] [:equal_sign :!OCequal_sign [:mode_d]]
+  [:y :!OCy [:mode_d]] [:u :!OCu [:mode_d]] [:i :!OCi [:mode_d]] [:o :!OCo [:mode_d]] [:p :!OCp [:mode_d]] [:open_bracket :!OCopen_bracket [:mode_d]] [:close_bracket :!OCclose_bracket [:mode_d]]
+  [:h :!OCleft_arrow [:mode_d]] [:j :!OCdown_arrow [:mode_d]] [:k :!OCup_arrow [:mode_d]] [:l :!OCright_arrow [:mode_d]] [:semicolon :!OCsemicolon [:mode_d]] [:quote :!OCquote [:mode_d]] [:backslash :!OCbackslash [:mode_d]]
+  [:n :!OCn [:mode_d]] [:m :!OCm [:mode_d]] [:comma :!OCcomma [:mode_d]] [:period :!OCperiod [:mode_d]] [:slash :!OCslash [:mode_d]]
+  [:##delete_or_backspace :!OCdelete_or_backspace [:mode_d]] [:##return_or_enter :!OCreturn_or_enter [:mode_d]]
+  [:##left_arrow :!OCleft_arrow [:mode_d]] [:##right_arrow :!OCright_arrow [:mode_d]] [:##up_arrow :!OCup_arrow [:mode_d]] [:##down_arrow :!OCdown_arrow [:mode_d]]
+  ]}
+{:des "  [⌂⌥⌘] holdLK to RAlt+RCmd: holdLK ⟶ r⌥⌘ (LK=KL)" :rules [ :mode_l
+  ; ←Left half types ⌥⌘Key (also mod key isn't swallowed)
+  [:non_us_backslash :!EQnon_us_backslash [:mode_k]]
+  [:1 :!EQ1 [:mode_k]] [:2 :!EQ2 [:mode_k]] [:3 :!EQ3 [:mode_k]] [:4 :!EQ4 [:mode_k]] [:5 :!EQ5 [:mode_k]]
+  [:q :!EQq [:mode_k]] [:w :!EQw [:mode_k]] [:e :!EQe [:mode_k]] [:r :!EQr [:mode_k]] [:t :!EQt [:mode_k]]
+  [:a :!EQa [:mode_k]] [:s :!EQs [:mode_k]] [:d :!EQd [:mode_k]] [:f :!EQf [:mode_k]] [:g :!EQg [:mode_k]]
+  [:z :!EQz [:mode_k]] [:x :!EQx [:mode_k]] [:c :!EQc [:mode_k]] [:v :!EQv [:mode_k]] [:b :!EQb [:mode_k]]
+  ]}
+  ;
+
+{:des "  [⌂⇧⌥] holdSF to LShift+LAlt: holdSF ⟶ l⇧⌥ (SF=FS)" :rules [ :mode_f
+  ; →Right half types ⇧⌥Key (also mod key isn't swallowed)
+  [:6 :!SO6 [:mode_s]] [:7 :!SO7 [:mode_s]] [:8 :!SO8 [:mode_s]] [:9 :!SO9 [:mode_s]] [:0 :!SO0 [:mode_s]] [:hyphen :!SOhyphen [:mode_s]] [:equal_sign :!SOequal_sign [:mode_s]]
+  [:y :!SOy [:mode_s]] [:u :!SOu [:mode_s]] [:i :!SOi [:mode_s]] [:o :!SOo [:mode_s]] [:p :!SOp [:mode_s]] [:open_bracket :!SOopen_bracket [:mode_s]] [:close_bracket :!SOclose_bracket [:mode_s]]
+  [:h :!SOh [:mode_s]] [:j :!SOj [:mode_s]] [:k :!SOk [:mode_s]] [:l :!SOl [:mode_s]] [:semicolon :!SOsemicolon [:mode_s]] [:quote :!SOquote [:mode_s]] [:backslash :!SObackslash [:mode_s]]
+  [:n :!SOn [:mode_s]] [:m :!SOm [:mode_s]] [:comma :!SOcomma [:mode_s]] [:period :!SOperiod [:mode_s]] [:slash :!SOslash [:mode_s]]
+  [:##delete_or_backspace :!SOdelete_or_backspace [:mode_s]] [:##return_or_enter :!SOreturn_or_enter [:mode_s]]
+  [:##left_arrow :!SOleft_arrow [:mode_s]] [:##right_arrow :!SOright_arrow [:mode_s]] [:##up_arrow :!SOup_arrow [:mode_s]] [:##down_arrow :!SOdown_arrow [:mode_s]]
+  ]}
+{:des "  [⌂⇧⌥] holdJL to RShift+RAlt: holdJL ⟶ r⇧⌥ (JL=LJ)" :rules [ :mode_j
+  ; ←Left half types ⇧⌥Key (also mod key isn't swallowed)
+  [:non_us_backslash :!ERnon_us_backslash [:mode_l]]
+  [:1 :!ER1 [:mode_l]] [:2 :!ER2 [:mode_l]] [:3 :!ER3 [:mode_l]] [:4 :!ER4 [:mode_l]] [:5 :!ER5 [:mode_l]]
+  [:q :!ERq [:mode_l]] [:w :!ERw [:mode_l]] [:e :!ERe [:mode_l]] [:r :!ERr [:mode_l]] [:t :!ERt [:mode_l]]
+  [:a :!ERa [:mode_l]] [:s :!ERs [:mode_l]] [:d :!ERd [:mode_l]] [:f :!ERf [:mode_l]] [:g :!ERg [:mode_l]]
+  [:z :!ERz [:mode_l]] [:x :!ERx [:mode_l]] [:c :!ERc [:mode_l]] [:v :!ERv [:mode_l]] [:b :!ERb [:mode_l]]
+  ]}
+
+{:des "  [⌂⇧⌘] holdFD to LShift+LCmd: holdSD ⟶ l⇧⌘ (FD=DF)" :rules [ :mode_f
+  ; →Right half types ⇧⌘Key (also mod key isn't swallowed)
+  [:1 :!SC1 [:mode_d]] [:2 :!SC2 [:mode_d]] [:3 :!SC3 [:mode_d]] [:4 :!SC4 [:mode_d]] [:5 :!SC5 [:mode_d]]
+  [:6 :!SC6 [:mode_d]] [:7 :!SC7 [:mode_d]] [:8 :!SC8 [:mode_d]] [:9 :!SC9 [:mode_d]] [:0 :!SC0 [:mode_d]] [:hyphen :!SChyphen [:mode_d]] [:equal_sign :!SCequal_sign [:mode_d]]
+  [:y :!SCy [:mode_d]] [:u :!SCu [:mode_d]] [:i :!SCi [:mode_d]] [:o :!SCo [:mode_d]] [:p :!SCp [:mode_d]] [:open_bracket :!SCopen_bracket [:mode_d]] [:close_bracket :!SCclose_bracket [:mode_d]]
+  [:h :!SCh [:mode_d]] [:j :!SCj [:mode_d]] [:k :!SCk [:mode_d]] [:l :!SCl [:mode_d]] [:semicolon :!SCsemicolon [:mode_d]] [:quote :!SCquote [:mode_d]] [:backslash :!SCbackslash [:mode_d]]
+  [:n :!SCn [:mode_d]] [:m :!SCm [:mode_d]] [:comma :!SCcomma [:mode_d]] [:period :!SCperiod [:mode_d]] [:slash :!SCslash [:mode_d]]
+  [:##delete_or_backspace :!SCdelete_or_backspace [:mode_d]] [:##return_or_enter :!SCreturn_or_enter [:mode_d]]
+  [:##left_arrow :!SCleft_arrow [:mode_d]] [:##right_arrow :!SCright_arrow [:mode_d]] [:##up_arrow :!SCup_arrow [:mode_d]] [:##down_arrow :!SCdown_arrow [:mode_d]]
+  ]}
+{:des "  [⌂⇧⌘] holdJK to RShift+RCmd: holdLK ⟶ r⇧⌘ (JK=KJ)" :rules [ :mode_j
+  ; ←Left half types ⇧⌘Key (also mod key isn't swallowed)
+  [:non_us_backslash :!RQnon_us_backslash [:mode_k]]
+  [:1 :!RQ1 [:mode_k]] [:2 :!RQ2 [:mode_k]] [:3 :!RQ3 [:mode_k]] [:4 :!RQ4 [:mode_k]] [:5 :!RQ5 [:mode_k]]
+  [:tab :!RQtab [:mode_k]]
+  [:q :!RQq [:mode_k]] [:w :!RQw [:mode_k]] [:e :!RQe [:mode_k]] [:r :!RQr [:mode_k]] [:t :!RQt [:mode_k]]
+  [:a :!RQa [:mode_k]] [:s :!RQs [:mode_k]] [:d :!RQd [:mode_k]] [:f :!RQf [:mode_k]] [:g :!RQg [:mode_k]]
+  [:z :!RQz [:mode_k]] [:x :!RQx [:mode_k]] [:c :!RQc [:mode_k]] [:v :!RQv [:mode_k]] [:b :!RQb [:mode_k]]
+  ]}
+
+{:des "  [⌂⇧⎈] holdFA to LShift+LControl: holdFA ⟶ l⇧⎈ (FA=AF)" :rules [ :mode_f
+  ; →Right half types ⌥⌘Key (also mod key isn't swallowed)
+  [:6 :!ST6 [:mode_a]] [:7 :!ST7 [:mode_a]] [:8 :!ST8 [:mode_a]] [:9 :!ST9 [:mode_a]] [:0 :!ST0 [:mode_a]] [:hyphen :!SThyphen [:mode_a]] [:equal_sign :!STequal_sign [:mode_a]]
+  [:y :!STy [:mode_a]] [:u :!STu [:mode_a]] [:i :!STi [:mode_a]] [:o :!STo [:mode_a]] [:p :!STp [:mode_a]] [:open_bracket :!STopen_bracket [:mode_a]] [:close_bracket :!STclose_bracket [:mode_a]]
+  [:h :!STh [:mode_a]] [:j :!STj [:mode_a]] [:k :!STk [:mode_a]] [:l :!STl [:mode_a]] [:semicolon :!STsemicolon [:mode_a]] [:quote :!STquote [:mode_a]] [:backslash :!Sbackslash [:mode_a]]
+  [:n :!STn [:mode_a]] [:m :!STm [:mode_a]] [:comma :!STcomma [:mode_a]] [:period :!STperiod [:mode_a]] [:slash :!STslash [:mode_a]]
+  [:##delete_or_backspace :!STdelete_or_backspace [:mode_a]] [:##return_or_enter :!STreturn_or_enter [:mode_a]]
+  [:##left_arrow :!STleft_arrow [:mode_a]] [:##right_arrow :!STright_arrow [:mode_a]] [:##up_arrow :!STup_arrow [:mode_a]] [:##down_arrow :!STdown_arrow [:mode_a]]
+  ]}
+{:des "  [⌂⇧⎈] holdJ; to RShift+RControl: holdJ; ⟶ r⇧⎈ (J;=;J)" :rules [ :mode_j
+  ; ←Left half types ⌥⌘Key (also mod key isn't swallowed)
+  [:non_us_backslash :!RWnon_us_backslash [:mod_sc]]
+  [:1 :!RW1 [:mod_sc]] [:2 :!RW2 [:mod_sc]] [:3 :!RW3 [:mod_sc]] [:4 :!RW4 [:mod_sc]] [:5 :!RW5 [:mod_sc]]
+  [:q :!RWq [:mod_sc]] [:w :!RWw [:mod_sc]] [:e :!RWe [:mod_sc]] [:r :!RWr [:mod_sc]] [:t :!RWt [:mod_sc]]
+  [:a :!RWa [:mod_sc]] [:s :!RWs [:mod_sc]] [:d :!RWd [:mod_sc]] [:f :!RWf [:mod_sc]] [:g :!RWg [:mod_sc]]
+  [:z :!RWz [:mod_sc]] [:x :!RWx [:mod_sc]] [:c :!RWc [:mod_sc]] [:v :!RWv [:mod_sc]] [:b :!RWb [:mod_sc]]
+  ]}
+
+;; {:des "  [⌂⎈⌥] holdAS to LControl+LAlt: holdAS ⟶ l⎈⌥ (AS=SA)" :rules [ :mode_a
+;;   [:h :!Oleft_arrow [:mode_s]] [:j :!Odown_arrow [:mode_s]] [:k :!Oup_arrow [:mode_s]] [:l :!Oright_arrow [:mode_s]]
+;;   ]}
+
+
+
+
+;;; Stand-alone home row mods
+{:des "  [⌂⎈] holdA to LCtrl: holdA ⟶ l⎈" :rules [ :mode_a
+  ; ←Left half types ⎈Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Tnon_us_backslash]
+  [:1 :!T1] [:2 :!T2] [:3 :!T3] [:4 :!T4] [:5 :!T5]
+  [:q :!Tq] [:w :!Tw] [:e :!Te] [:r :!Tr] [:t :!Tt]
+  [:a :!Ta] [:s :!Ts] [:d :!Td] [:f :!Tf] [:g :!Tg]
+  [:z :!Tz] [:x :!Tx] [:c :!Tc] [:v :!Tv] [:b :!Tb]
+  ; →Right half types ⎈Key (also mod key isn't swallowed)
+  [:6 :!T6] [:7 :!T7] [:8 :!T8] [:9 :!T9] [:0 :!T0] [:hyphen :!Thyphen] [:equal_sign :!Tequal_sign]
+  [:y :!Ty] [:u :!Tu] [:i :!Ti] [:o :!To] [:p :!Tp] [:open_bracket :!Topen_bracket] [:close_bracket :!Tclose_bracket]
+  [:h :left_arrow] [:j :down_arrow] [:k :up_arrow] [:l :right_arrow] [:semicolon :!Tsemicolon] [:quote :!Tquote] [:backslash :backslash] [:!Fbackslash :delete_forward]
+  [:n :!Tn] [:m :!Tm] [:comma :!Tcomma] [:period :!Tperiod] [:slash :!Tslash]
+  [:##delete_or_backspace :!Tdelete_or_backspace] [:##return_or_enter :!Treturn_or_enter]
+  [:##left_arrow :!Tleft_arrow] [:##right_arrow :!Tright_arrow] [:##up_arrow :!Tup_arrow] [:##down_arrow :!Tdown_arrow]
+  [:!Cleft_arrow :!CTleft_arrow]
+  [:!Oh :!Oleft_arrow] [:!Oj :!Odown_arrow] [:!Ok :!Oup_arrow] [:!Ol :!Oright_arrow]
+  [:!Ch :!Cleft_arrow] [:!Cj :!Cdown_arrow] [:!Ck :!Cup_arrow] [:!Cl :!Cright_arrow]
+  ]}
+{:des "  [⌂⎈] hold; to RCtrl: hold; ⟶ r⎈" :rules [ :mod_sc
+  ; ←Left half types ⎈Key (also mod key isn't swallowe)
+  [:non_us_backslash :!Wnon_us_backslash]
+  [:1 :!W1] [:2 :!W2] [:3 :!W3] [:4 :!W4] [:5 :!W5]
+  [:q :!Wq] [:w :!Ww] [:e :!We] [:r :!Wr] [:t :!Wt]
+  [:a :!Wa] [:s :!Ws] [:d :!Wd] [:f :!Wf] [:g :!Wg]
+  [:z :!Wz] [:x :!Wx] [:c :!Wc] [:v :!Wv] [:b :!Wb]
+  ; →Right half types ⎈Key
+  [:6 :!W6] [:7 :!W7] [:8 :!W8] [:9 :!W9] [:0 :!W0] [:hyphen :!Whyphen] [:equal_sign :!Wequal_sign]
+  [:y :!Wy] [:u :!Wu] [:i :!Wi] [:o :!Wo] [:p :!Wp] [:open_bracket :!Wopen_bracket] [:close_bracket :!Wclose_bracket]
+  [:h :!Wh] [:j :!Wj] [:k :!Wk] [:l :!Wl] [:semicolon :!Wsemicolon] [:quote :!Wquote] [:backslash :!Wbackslash]
+  [:n :!Wn] [:m :!Wm] [:comma :!Wcomma] [:period :!Wperiod] [:slash :!Wslash]
+  [:##delete_or_backspace :!Wdelete_or_backspace] [:##return_or_enter :!Wreturn_or_enter]
+  [:##left_arrow :!Wleft_arrow] [:##right_arrow :!Wright_arrow] [:##up_arrow :!Wup_arrow] [:##down_arrow :!Wdown_arrow]
+  ]}
+
+{:des "  [⌂⌥] holdS to LAlt: holdS ⟶ l⌥" :rules [ :mode_s
+  ; ←Left half types ⌥Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Onon_us_backslash]
+  [:1 :!O1] [:2 :!O2] [:3 :!O3] [:4 :!O4] [:5 :!O5]
+  [:q :!Oq] [:w :!Ow] [:e :!Oe] [:r :!Or] [:t :!Ot]
+  [:a :!Oa] [:s :!Os] [:d :!Od] [:f :!Of] [:g :!Og]
+  [:z :!Oz] [:x :!Ox] [:c :!Oc] [:v :!Ov] [:b :!Ob]
+  ; →Right half types ⌥Key
+  [:6 :!O6] [:7 :!O7] [:8 :!O8] [:9 :!O9] [:0 :!O0] [:hyphen :!Ohyphen] [:equal_sign :!Oequal_sign]
+  [:y :!Oy] [:u :!Ou] [:i :up_arrow] [:o :!Oo] [:p :!Op] [:open_bracket :!Oopen_bracket] [:close_bracket :!Oclose_bracket]
+  [:h :!Oh] [:j :left_arrow] [:k :down_arrow] [:l :right_arrow] [:semicolon :!Osemicolon] [:quote :!Oquote] [:backslash :!Odelete_or_backspace]
+  [:n :!On] [:m :!Om] [:comma :!Ocomma] [:period :!Operiod] [:slash :!Oslash]
+  [:##delete_or_backspace :!Odelete_or_backspace] [:##return_or_enter :!Oreturn_or_enter]
+  [:##left_arrow :!Oleft_arrow] [:##right_arrow :!Oright_arrow] [:##up_arrow :!Oup_arrow] [:##down_arrow :!Odown_arrow]
+  [:spacebar :!Ospacebar]
+  ]}
+{:des "  [⌂⌥] holdL to RAlt: holdL ⟶ r⌥" :rules [ :mode_l
+  ; ←Left half types ⌥Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Enon_us_backslash]
+  [:1 :!E1] [:2 :!E2] [:3 :!E3] [:4 :!E4] [:5 :!E5]
+  [:q :!Eq] [:w :!Ew] [:e :!Ee] [:r :!Er] [:t :!Et]
+  [:a :!Ea] [:s :!Es] [:d :!Ed] [:f :!Ef] [:g :!Eg]
+  [:z :!Ez] [:x :!Ex] [:c :!Ec] [:v :!Ev] [:b :!Eb]
+  ; →Right half types ⌥Key
+  [:6 :!E6] [:7 :!E7] [:8 :!E8] [:9 :!E9] [:0 :!E0] [:hyphen :!Ehyphen] [:equal_sign :!Eequal_sign]
+  [:y :!Ey] [:u :!Eu] [:i :!Ei] [:o :!Eo] [:p :!Ep] [:open_bracket :!Eopen_bracket] [:close_bracket :!Eclose_bracket]
+  [:h :!Eh] [:j :!Ej] [:k :!Ek] [:l :!El] [:semicolon :!Esemicolon] [:quote :!Equote] [:backslash :!Ebackslash]
+  [:n :!En] [:m :!Em] [:comma :!Ecomma] [:period :!Eperiod] [:slash :!Eslash]
+  [:##delete_or_backspace :!Edelete_or_backspace] [:##return_or_enter :!Ereturn_or_enter]
+  [:##left_arrow :!Eleft_arrow] [:##right_arrow :!Eright_arrow] [:##up_arrow :!Eup_arrow] [:##down_arrow :!Edown_arrow]
+  [:spacebar :!Espacebar]
+  ]}
+
+{:des "  [⌂⌘] holdD to LCmd: holdD ⟶ l⌘" :rules [ :mode_d
+  ; ←Left half types ⌘Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Cnon_us_backslash]
+  [:1 :!C1] [:2 :!C2] [:3 :!C3] [:4 :!C4] [:5 :!C5]
+  [:tab :!Ctab]
+  [:q :!Cq] [:w :!Cw] [:e :!Ce] [:r :!Cr] [:t :!Ct]
+  [:a :!Ca] [:s :!Cs] [:d :!Cd] [:f :!Cf] [:g :!Cg]
+  [:z :!Cz] [:x :!Cx] [:c :!Cc] [:v :!Cv] [:b :!Cb]
+  ; →Right half types ⌘Key
+  [:6 :!C6] [:7 :!C7] [:8 :!C8] [:9 :!C9] [:0 :!C0] [:hyphen :!Chyphen] [:equal_sign :!Cequal_sign]
+  [:y :!Cy] [:u :!Cu] [:i :!Ci] [:o :!Co] [:p :!Cp] [:open_bracket :!Copen_bracket] [:close_bracket :!Cclose_bracket]
+  [:h :!Ch] [:j :!Cj] [:k :!Ck] [:l :!Cl] [:semicolon :!Csemicolon] [:quote :!Cquote] [:backslash :!Cbackslash]
+  [:n :!Cn] [:m :!Cm] [:comma :!Ccomma] [:period :!Cperiod] [:slash :!Cslash]
+  [:##delete_or_backspace :!Cdelete_or_backspace] [:##return_or_enter :!Creturn_or_enter]
+  [:##left_arrow :!Cleft_arrow] [:##right_arrow :!Cright_arrow] [:##up_arrow :!Cup_arrow] [:##down_arrow :!Cdown_arrow]
+  [:!Th :!TCleft_arrow]
+  [:grave_accent_and_tilde :!Cgrave_accent_and_tilde]
+  ]}
+{:des "  [⌂⌘] holdK to RCmd: holdK ⟶ r⌘" :rules [ :mode_k
+  ; ←Left half types ⌘Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Qnon_us_backslash]
+  [:1 :!Q1] [:2 :!Q2] [:3 :!Q3] [:4 :!Q4] [:5 :!Q5]
+  [:##tab :!Ctab]
+  [:q :!Qq] [:w :!Qw] [:e :!Qe] [:r :!Qr] [:t :!Qt]
+  [:a :!Qa] [:s :!Qs] [:d :!Qd] [:f :!Qf] [:g :!Qg]
+  [:z :!Qz] [:x :!Qx] [:c :!Qc] [:v :!Qv] [:b :!Qb]
+  ; →Right half types ⌘Key
+  [:6 :!Q6] [:7 :!Q7] [:8 :!Q8] [:9 :!Q9] [:0 :!Q0] [:hyphen :!Qhyphen] [:equal_sign :!Qequal_sign]
+  [:y :!Qy] [:u :!Qu] [:i :!Qi] [:o :!Qo] [:p :!Qp] [:open_bracket :!Qopen_bracket] [:close_bracket :!Qclose_bracket]
+  [:h :!Qh] [:j :!Qj] [:k :!Qk] [:l :!Ql] [:semicolon :!Qsemicolon] [:quote :!Qquote] [:backslash :!Qbackslash]
+  [:n :!Qn] [:m :!Qm] [:comma :!Qcomma] [:period :!Qperiod] [:slash :!Qslash]
+  [:##delete_or_backspace :!Qdelete_or_backspace] [:##return_or_enter :!Qreturn_or_enter]
+  [:##left_arrow :!Qleft_arrow] [:##right_arrow :!Qright_arrow] [:##up_arrow :!Qup_arrow] [:##down_arrow :!Qdown_arrow]
+  [:grave_accent_and_tilde :!Qgrave_accent_and_tilde]
+  ]}
+
+{:des "  [⌂⇧] holdF to LShift: holdF ⟶ l⇧" :rules [ :mode_f
+  ; ←Left half types ⇧Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Snon_us_backslash]
+  [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
+  [:q :!Sq] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
+  [:a :!Sa] [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg]
+  [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
+  ; →Right half types ⇧Key
+  [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0] [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
+  [:y :!Sy] [:u :!Su] [:i :!Si] [:o :!So] [:p :!Sp] [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
+  [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sl] [:semicolon :!Ssemicolon] [:quote :!Squote] [:backslash :!Sbackslash]
+  [:n :!Sn] [:m :!Sm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
+  [:##delete_or_backspace :!Sdelete_or_backspace] [:##return_or_enter :!Sreturn_or_enter]
+  [:##left_arrow :!Sleft_arrow] [:##right_arrow :!Sright_arrow] [:##up_arrow :!Sup_arrow] [:##down_arrow :!Sdown_arrow]
+  ]}
+{:des "  [⌂⇧] holdJ to RShift: holdJ ⟶ r⇧" :rules [ :mode_j
+  ; ←Left half types ⇧Key (also mod key isn't swallowed)
+  [:non_us_backslash :!Rnon_us_backslash]
+  [:tab :!RCtab]
+  [:1 :!R1] [:2 :!R2] [:3 :!R3] [:4 :!R4] [:5 :!R5]
+  [:q :!Rq] [:w :!Rw] [:e :!Re] [:r :!Rr] [:t :!Rt]
+  [:a :!Ra] [:s :!Rs] [:d :!Rd] [:f :!Rf] [:g :!Rg]
+  [:z :!Rz] [:x :!Rx] [:c :!Rc] [:v :!Rv] [:b :!Rb]
+  ; →Right half types ⇧Key
+  [:6 :!R6] [:7 :!R7] [:8 :!R8] [:9 :!R9] [:0 :!R0] [:hyphen :!Rhyphen] [:equal_sign :!Requal_sign]
+  [:y :!Ry] [:u :!Ru] [:i :!Ri] [:o :!Ro] [:p :!Rp] [:open_bracket :!Ropen_bracket] [:close_bracket :!Rclose_bracket]
+  [:h :!Rh] [:j :!Rj] [:k :!Rk] [:l :!Rl] [:semicolon :!Rsemicolon] [:quote :!Rquote] [:backslash :!Rbackslash]
+  [:n :!Rn] [:m :!Rm] [:comma :!Rcomma] [:period :!Rperiod] [:slash :!Rslash]
+  [:##delete_or_backspace :!Rdelete_or_backspace] [:##return_or_enter :!Rreturn_or_enter]
+  [:##left_arrow :!Rleft_arrow] [:##right_arrow :!Rright_arrow] [:##up_arrow :!Rup_arrow] [:##down_arrow :!Rdown_arrow]
+  [:grave_accent_and_tilde :!Rgrave_accent_and_tilde]
+  ]}
+
+; number layers]
+
+{:des " V, 2nd row to numbers  " :rules [ :mode_v
+  [:y :5] [:u :6] [:i :7] [:o :8] [:p :9 ] [:open_bracket :0] [:close_bracket :hyphen] [:quote :equal_sign]
+]}
+{:des " C + 2nd row to symbols  " :rules [ :mode_c
+  [:y :!S5] [:u :!S6] [:i :!S7] [:o :!S8] [:p :!S9] [:open_bracket :!S0] [:close_bracket :!Shyphen] [:quote :!Sequal_sign]
+]}
+
+{:des " N + 2nd row to numbers,  " :rules [ :mode_n
+  [:q :grave_accent_and_tilde] [:w :1] [:e :2] [:r :3] [:t :4]
+]}
+{:des " M + 2nd row to symbols  " :rules [ :mode_m
+  [:q :!Sgrave_accent_and_tilde] [:w :!S1] [:e :!S2] [:r :!S3] [:t :!S4]
+]}
+
+
+;
+; to add. single touch shift for esc
+
+{:des "remap backslash to backspace/delete" :rules [
+  [:!Sbackslash :delete_forward] [:backslash :delete_or_backspace ]
+  [:!Tbackslash :backslash] [:!STbackslash :!Sbackslash]
+]}
+
+]}

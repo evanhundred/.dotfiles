@@ -1,0 +1,116 @@
+{:profiles {:goku {
+  :default true ;↓ delays can be set individually in mod-tap layer definitions if you want separate default values here
+  :sim  	189	; |  50|	simultaneous_threshold_milliseconds   	different from simlayers, this is for cases like [:a :b]
+  :alone	189	; |1000|	to_if_alone_timeout_milliseconds      	??? must be < than ↓:delay/:held to avoid the bug where mod-tap layer stays 1
+  :held 	190	; | 500|	to_if_held_down_threshold_milliseconds	should = ↓:delay for mod-tap layers
+  :delay	190	; |    |	to_delayed_action_delay_milliseconds  	should = ↑:held  for mod-tap layers
+  }}
+:input-sources {
+  :en {:input_source_id "^org\\.sil\\.ukelele\\.keyboardlayout\\.t\\.english—types$" :language "en"}
+  :ru {:input_source_id "^org\\.sil\\.ukelele\\.keyboardlayout\\.t\\.russian—types$" :language "ru"}
+  }
+:templates {
+  :notify "osascript -e 'display notification \"%s\"'"
+  :echok  "osascript -e 'display notification \"Pressed %s\"'"
+  }
+
+:layers {
+  ;; :tab-mode   {:key :tab}
+  :mode_caps {:key :left_control :alone {:key :caps_lock}}
+  :mode-tab {:key :left_shift :alone {:key :tab}}
+  } ;; layers
+
+:open "open \"%s\""
+
+
+:main [
+  {:des "caps mode layer timing" :rules [
+    [:caps_lock nil [                       ] ;mode_caps
+    {:alone {:key :caps_lock :halt true} :delayed {:canceled {:key :caps_lock}} :held {:set["mode_caps" 1] :repeat false} :afterup {:set["mode_caps" 0]}
+      :params {:alone 100 :held 101 :delay 101 :sim 100} }]
+    ]}
+  {:des "tab mode layer timing" :rules [
+    [:tab nil [                       ] ;mode_caps
+    {:alone {:key :tab :halt true} :delayed {:canceled {:key :tab}} :held {:set["mode_tab" 1] :repeat false} :afterup {:set["mode_tab" 0]}
+      :params {:alone 100 :held 101 :delay 101 :sim 100} }]
+    ]}
+
+  {:des "caps mode maps" :rules [ :mode_caps
+      ; ←Left half types ⇧Key (also mod key isn't swallowed)
+      [:1 :!T1] [:2 :!T2] [:3 :!T3] [:4 :!T4] [:5 :!T5]
+      [:q :!Tq] [:w :!Tw] [:e :!Te] [:r :!Tr] [:t :!Tt]
+      [:a :!Ta] [:s :!Ts] [:d :!Td] [:f :!Tf] [:g :!Tg]
+      [:z :!Tz] [:x :!Tx] [:c :!Tc] [:v :!Tv] [:b :!Tb]
+      [:i :return_or_enter]
+
+      ; →Right half types ⎈Key (also mod key isn't swallowed)
+      [:6 :!T6] [:7 :!T7] [:8 :!T8] [:9 :!T9] [:0 :!T0] [:hyphen :!Thyphen] [:equal_sign :!Tequal_sign]
+      [:y :!Ty] [:o :!To] [:p :!Tp] [:open_bracket :!Topen_bracket] [:close_bracket :!Tclose_bracket]
+      [:##h :##left_arrow] [:##j :##down_arrow] [:##k :##up_arrow] [:##l :##right_arrow] [:semicolon :!Tsemicolon] [:quote :!Tquote] [:backslash :backslash] [:!Sbackslash :!Sbackslash]
+      [:n :!Tn] [:m :delete_or_backspace] [:comma :!Tcomma] [:period :!Tperiod] [:slash :!Tslash]
+      [:##delete_or_backspace :!Tdelete_or_backspace] [:##return_or_enter :!Treturn_or_enter]
+      [:##left_arrow :!Tleft_arrow] [:##right_arrow :!Tright_arrow] [:##up_arrow :!Tup_arrow] [:##down_arrow :!Tdown_arrow]
+      [:!Cleft_arrow :!CTleft_arrow]
+      ]}
+  {:des "tab mode maps" :rules [ :mode_tab
+      ; ←Left half types ⇧Key (also mod key isn't swallowed)
+      [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
+      [:q :!Sq] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
+      [:a :!Sa] [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg]
+      [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
+
+      ; →Right half types ⎈Key (also mod key isn't swallowed)
+      [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0] [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
+      [:y :!Sy] [:o :!So] [:p :!Sp] [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
+      [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sright_arrow] [:semicolon :!Ssemicolon] [:quote :!Squote] [:backslash :!Sbackslash]
+      [:n :!Tn] [:m :!Tm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
+      [:##delete_or_backspace :!Sdelete_or_backspace] [:##return_or_enter :!Sreturn_or_enter]
+      [:##left_arrow :!Sleft_arrow] [:##right_arrow :!Sright_arrow] [:##up_arrow :!Sup_arrow] [:##down_arrow :!Sdown_arrow]
+      [:!Sleft_arrow :!STleft_arrow]
+      ]}
+
+  {:des "single tap left shift to esc" :rules [
+    [:left_shift :left_shift nil {:alone :escape}]
+    ]}
+  {:des "backslash to delete" :rules [
+      [:backslash :delete_or_backspace]
+    ]}
+  {:des "override shift + caps" :rules [
+      [:!Scaps_lock :!Sbackslash]
+    ]}
+  ;; {:des "remap backslash to backspace/delete" :rules [
+  ;;   [:backslash :delete_or_backspace]
+  ;;   [:!Tbackslash :backslash] [:!STbackslash :!Sbackslash]
+  ;;   [:!Pbackslash :backslash] [:!SPbackslash :!Sbackslash]
+  ;;   [:!Sbackslash :delete_forward]
+  ;; ]}
+
+    ;; {:des "remap backslash to backspace/delete" :rules [
+    ;;   [:backslash :delete_or_backspace] [:!Tbackslash :backslash] [:!TSbackslash :!Sbackslash] [:!Sbackslash :delete_forward]
+    ;; ]}
+
+
+    {:des "  Alt + backslash to alt + backspace  " :rules [
+      [:!Obackslash :!Odelete_or_backspace]
+    ]}
+    ;; {:des "caps to lControl; shift + caps to caps" :rules [
+    ;;   [:caps_lock :left_control nil {:alone :caps_lock}] [:!Scaps_lock :caps_lock] [:!Rcaps_lock :caps_lock]
+    ;; ]}
+
+
+    ;; {:des "  LShift mode layer timing" :rules [
+    ;;   [:left_shift nil [                       ] ;mode_lshift
+    ;;   {:alone {:key :escape :halt true} :delayed {:canceled {:key :left_shift}} :held {:set["lshift" 1] :repeat false} :afterup {:set["mode_lshift" 0]}
+    ;;     :params {:alone 100 :held 101 :delay 101 :sim 100} }]
+    ;; ]}
+
+    ;; {:des "caps backslash combo" :rules [ :mode_lshift
+    ;;   [:backslash :!Sbackslash [:mode_caps]]
+    ;; ]}
+
+  {:des "tab to left shift" :rules [
+    [:tab :left_shift]
+]}
+
+
+]}
