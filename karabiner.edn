@@ -24,6 +24,10 @@
 
 
 :main [
+  {:des "mute to F6" :rules [
+    [:f10 :f6] [:f6 :mute]
+  ]}
+
   {:des "caps mode layer timing" :rules [
     [:caps_lock nil [                       ] ;mode_caps
     {:alone {:key :caps_lock :halt true} :delayed {:canceled {:key :caps_lock}} :held {:set["mode_caps" 1] :repeat false} :afterup {:set["mode_caps" 0]}
