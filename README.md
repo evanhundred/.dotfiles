@@ -7,4 +7,5 @@
 | .zshrc                | zsh profile                                               |
 | bash_profile          |                                                           |
 
+<br />
 (e) 2023
