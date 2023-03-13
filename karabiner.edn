@@ -65,7 +65,7 @@
       [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sright_arrow] [:semicolon :!Ssemicolon] [:quote :!Squote] [:backslash :!Sbackslash]
       [:n :!Tn] [:m :!Tm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
       [:##delete_or_backspace :!Sdelete_or_backspace] [:##return_or_enter :!Sreturn_or_enter]
-      [:##left_arrow :!Sleft_arrow] [:##right_arrow :!Sright_arrow] [:##up_arrow :!Sup_arrow] [:##down_arrow :!Sdown_arrow]
+      [:##left_arrow :##left_arrow] [:##right_arrow :##right_arrow] [:##up_arrow :##up_arrow] [:##down_arrow :##down_arrow]
       [:!Sleft_arrow :!STleft_arrow]
       ]}
 
