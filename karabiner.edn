@@ -16,27 +16,32 @@
 
 :layers {
   ;; :tab-mode   {:key :tab}
-  :mode_caps {:key :left_control :alone {:key :caps_lock}}
-  :mode-tab {:key :left_shift :alone {:key :tab}}
+  :mode_caps {:key :caps_lock :alone {:key :escape}}
+  ;; :mode-tab {:key :left_shift :alone {:key :tab}}
   } ;; layers
 
 :open "open \"%s\""
 
-
 :main [
+  {:des "shift caps to caps" :rules [
+    [:!Rcaps_lock :caps_lock]
+  ]}
+  {:des "control + command patch" :rules [
+    [:!TCm :!TCm]
+  ]}
   {:des "mute to F6" :rules [
-    [:f10 :f6] [:f6 :mute]
+    [:f6 :mute] [:f10 :f6]
   ]}
 
   {:des "caps mode layer timing" :rules [
-    [:caps_lock nil [                       ] ;mode_caps
+    [:caps_lock nil [  :mode_tab                     ] ;mode_caps
     {:alone {:key :caps_lock :halt true} :delayed {:canceled {:key :caps_lock}} :held {:set["mode_caps" 1] :repeat false} :afterup {:set["mode_caps" 0]}
       :params {:alone 100 :held 101 :delay 101 :sim 100} }]
     ]}
   {:des "tab mode layer timing" :rules [
-    [:tab nil [                       ] ;mode_caps
+    [:tab nil [ :mode_caps                      ] ;mode_tab
     {:alone {:key :tab :halt true} :delayed {:canceled {:key :tab}} :held {:set["mode_tab" 1] :repeat false} :afterup {:set["mode_tab" 0]}
-      :params {:alone 100 :held 101 :delay 101 :sim 100} }]
+      :params {:alone 120 :held 121 :delay 121 :sim 120} }]
     ]}
 
   {:des "caps mode maps" :rules [ :mode_caps
@@ -54,24 +59,26 @@
       [:n :!Tn] [:m :delete_or_backspace] [:comma :!Tcomma] [:period :!Tperiod] [:slash :!Tslash]
       [:##delete_or_backspace :!Tdelete_or_backspace] [:##return_or_enter :!Treturn_or_enter]
       [:##left_arrow :!Tleft_arrow] [:##right_arrow :!Tright_arrow] [:##up_arrow :!Tup_arrow] [:##down_arrow :!Tdown_arrow]
-      [:!Cleft_arrow :!CTleft_arrow]
+      [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
       ]}
-  {:des "tab mode maps" :rules [ :mode_tab
-      ; ←Left half types ⇧Key (also mod key isn't swallowed)
-      [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
-      [:q :!Sq] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
-      [:a :!Sa] [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg]
-      [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
 
-      ; →Right half types ⎈Key (also mod key isn't swallowed)
-      [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0] [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
-      [:y :!Sy] [:o :!So] [:p :!Sp] [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
-      [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sright_arrow] [:semicolon :!Ssemicolon] [:quote :!Squote] [:backslash :!Sbackslash]
-      [:n :!Tn] [:m :!Tm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
-      [:##delete_or_backspace :!Sdelete_or_backspace] [:##return_or_enter :!Sreturn_or_enter]
-      [:##left_arrow :##left_arrow] [:##right_arrow :##right_arrow] [:##up_arrow :##up_arrow] [:##down_arrow :##down_arrow]
-      [:!Sleft_arrow :!STleft_arrow]
-      ]}
+      ;; this makes caps lock stuck on when commented in ???
+  ;; {:des "tab mode maps" :rules [ :mode_tab
+  ;;     ; ←Left half types ⇧Key (also mod key isn't swallowed)
+  ;;     [:1 :!S1] [:2 :!S2] [:3 :!S3] [:4 :!S4] [:5 :!S5]
+  ;;     [:q :grave_accent_and_tilde] [:w :!Sw] [:e :!Se] [:r :!Sr] [:t :!St]
+  ;;     [:a :!Sa] [:s :!Ss] [:d :!Sd] [:f :!Sf] [:g :!Sg]
+  ;;     [:z :!Sz] [:x :!Sx] [:c :!Sc] [:v :!Sv] [:b :!Sb]
+
+  ;;     ; →Right half types ⎈Key (also mod key isn't swallowed)
+  ;;     [:6 :!S6] [:7 :!S7] [:8 :!S8] [:9 :!S9] [:0 :!S0] [:hyphen :!Shyphen] [:equal_sign :!Sequal_sign]
+  ;;     [:y :!Sy] [:o :!So] [:p :!Sp] [:open_bracket :!Sopen_bracket] [:close_bracket :!Sclose_bracket]
+  ;;     [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sright_arrow] [:semicolon :!Ssemicolon] [:quote :!Squote] [:backslash :!Sbackslash]
+  ;;     [:n :!Tn] [:m :!Tm] [:comma :!Scomma] [:period :!Speriod] [:slash :!Sslash]
+  ;;     [:##delete_or_backspace :!Sdelete_or_backspace] [:##return_or_enter :!Sreturn_or_enter]
+  ;;     [:##left_arrow :##left_arrow] [:##right_arrow :##right_arrow] [:##up_arrow :##up_arrow] [:##down_arrow :##down_arrow]
+  ;;     [:!Sleft_arrow :!STleft_arrow]
+  ;;     ]}
 
   {:des "single tap left shift to esc" :rules [
     [:left_shift :left_shift nil {:alone :escape}]
@@ -112,9 +119,9 @@
     ;;   [:backslash :!Sbackslash [:mode_caps]]
     ;; ]}
 
-  {:des "tab to left shift" :rules [
-    [:tab :left_shift]
-]}
+  ;; {:des "tab to left shift" :rules [
+  ;;   [:tab :left_shift]
+;; ]}
 
 
 ]}
