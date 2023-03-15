@@ -72,11 +72,11 @@
   ;;     [:!Sleft_arrow :!STleft_arrow]
   ;;     ]}
 
-  {:des "caps mode maps" :rules [ :mode_caps
+{:des "tab mode maps" :rules [ :mode_tab
       ; ←Left half types ⇧Key (also mod key isn't swallowed)
       [:1 :!T1] [:2 :!T2] [:3 :!T3] [:4 :!T4] [:5 :!T5]
       [:q :!Tq] [:w :!Tw] [:e :!Te] [:r :!Tr] [:t :!Tt]
-      [:a :!Ta] [:s :!Ts] [:d :!Td] [:f :!Tf] [:g :!Tg]
+      [:a :!Ta] [:s :!Ts] [:d :!Td] [:##f :##delete_or_backspace] [:g :!Tg]
       [:z :!Tz] [:x :!Tx] [:c :!Tc] [:v :!Tv] [:b :!Tb]
       [:i :return_or_enter]
 
@@ -88,6 +88,23 @@
       [:##delete_or_backspace :!Tdelete_or_backspace] [:##return_or_enter :!Treturn_or_enter]
       [:##left_arrow :!Tleft_arrow] [:##right_arrow :!Tright_arrow] [:##up_arrow :!Tup_arrow] [:##down_arrow :!Tdown_arrow]
       [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
+      ]}
+    {:des "caps mode maps" :rules [ :mode_caps
+      ; ←Left half types ⇧Key (also mod key isn't swallowed)
+      [:##1 :!S1] [:##2 :!S2] [:##3 :!S3] [:##4 :!S4] [:##5 :!S5]
+      [:##q :!Sq] [:##w :!Sw] [:##e :!Se] [:##r :!Sr] [:##t :!St]
+      [:##a :!Sa] [:##s :!Ss] [:##d :!Sd] [:##f :!Sf] [:##g :!Sg]
+      [:##z :!Sz] [:##x :!Sx] [:##c :!Sc] [:##v :!Sv] [:##b :!Sb]
+      [:##i :!Si]
+
+      ;; ; →Right half types ⎈Key (also mod key isn't swallowed)
+      [:##6 :!S6] [:##7 :!S7] [:##8 :!S8] [:##9 :!S9] [:##0 :!S0] [:##hyphen :!Shyphen] [:##equal_sign :!Sequal_sign]
+      [:##y :!Sy] [:##u :!Su] [:##o :!So] [:##p :!Sp] [:##open_bracket :!Sopen_bracket] [:##close_bracket :!Sclose_bracket]
+      [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sl] [:##semicolon :!Ssemicolon] [:##quote :!Squote] [:##backslash :!Sbackslash]
+      [:##n :!Sn] [:##m :!Sm] [:##comma :!Scomma] [:##period :!Speriod] [:##slash :!Sslash]
+      ;; ;; [:delete_or_backspace :!Tdelete_or_backspace] [:return_or_enter :!Treturn_or_enter]
+      ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
+      ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
       ]}
   {:des "enter mode maps" :rules [ :mode_enter
       ; ←Left half types ⇧Key (also mod key isn't swallowed)
@@ -102,23 +119,6 @@
       [:y :!Ry] [:u :!Ru] [:o :!Ro] [:p :!Rp] [:open_bracket :!Ropen_bracket] [:close_bracket :!Rclose_bracket]
       [:h :!Sh] [:j :!Sj] [:k :!Rk] [:l :!Rl] [:semicolon :!Rsemicolon] [:quote :!Rquote] [:backslash :backslash] [:!Sbackslash :!Sbackslash]
       [:n :!Rn] [:m :!Rm] [:comma :!Rcomma] [:period :!Rperiod] [:slash :!Rslash]
-      ;; ;; [:delete_or_backspace :!Tdelete_or_backspace] [:return_or_enter :!Treturn_or_enter]
-      ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
-      ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
-      ]}
-  {:des "tab mode maps" :rules [ :mode_tab
-      ; ←Left half types ⇧Key (also mod key isn't swallowed)
-      [:##1 :!S1] [:##2 :!S2] [:##3 :!S3] [:##4 :!S4] [:##5 :!S5]
-      [:##q :!Sq] [:##w :!Sw] [:##e :!Se] [:##r :!Sr] [:##t :!St]
-      [:##a :!Sa] [:##s :!Ss] [:##d :!Sd] [:##f :!Sf] [:##g :!Sg]
-      [:##z :!Sz] [:##x :!Sx] [:##c :!Sc] [:##v :!Sv] [:##b :!Sb]
-      [:##i :!Si]
-
-      ;; ; →Right half types ⎈Key (also mod key isn't swallowed)
-      [:##6 :!S6] [:##7 :!S7] [:##8 :!S8] [:##9 :!S9] [:##0 :!S0] [:##hyphen :!Shyphen] [:##equal_sign :!Sequal_sign]
-      [:##y :!Sy] [:##u :!Su] [:##o :!So] [:##p :!Sp] [:##open_bracket :!Sopen_bracket] [:##close_bracket :!Sclose_bracket]
-      [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sl] [:##semicolon :!Ssemicolon] [:##quote :!Squote] [:##backslash :!Sbackslash]
-      [:##n :!Sn] [:##m :!Sm] [:##comma :!Scomma] [:##period :!Speriod] [:##slash :!Sslash]
       ;; ;; [:delete_or_backspace :!Tdelete_or_backspace] [:return_or_enter :!Treturn_or_enter]
       ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
       ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
