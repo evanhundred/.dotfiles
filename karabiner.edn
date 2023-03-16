@@ -100,6 +100,11 @@
     [:left_shift :left_shift nil {:alone :escape}]
     ]}
 
+{:des "numpad" :rules [
+  [:!Su :4] [:!Si :5] [:!So :6]
+  [:!Sj :1] [:!Sk :2] [:!Sl :3]
+]}
+
 
 {:des "tab mode maps" :rules [ :mode_tab
       ; ←Left half types ⇧Key (also mod key isn't swallowed)
