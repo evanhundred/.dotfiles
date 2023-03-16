@@ -91,11 +91,11 @@
   ;;     [:##left_arrow :##left_arrow] [:##right_arrow :##right_arrow] [:##up_arrow :##up_arrow] [:##down_arrow :##down_arrow]
   ;;     [:!Sleft_arrow :!STleft_arrow]
   ;;     ]}
-{:des "left shift mode" :rules [
-  [:left_shift nil [] ;mode_left_shift
-  {:alone {:key :escape :halt true} :delayed {:canceled {:key :left_shift}} :held {:set["mode_left_shift" 1] :repeat false} :afterup {:set["mode_left_shift" 0]}
-    :params {:alone 100 :held 101 :delay 101 :sim 100} }]
-]}
+;; {:des "left shift mode" :rules [
+;;   [:left_shift nil [] ;mode_left_shift
+;;   {:alone {:key :escape :halt true} :delayed {:canceled {:key :left_shift}} :held {:set["mode_left_shift" 1] :repeat false} :afterup {:set["mode_left_shift" 0]}
+;;     :params {:alone 100 :held 101 :delay 101 :sim 100} }]
+;; ]}
 {:des "single tap left shift to esc" :rules [
     [:left_shift :left_shift nil {:alone :escape}]
     ]}
@@ -174,25 +174,36 @@
       ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
       ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
       ]}
-  {:des "left shift mode maps" :rules [ :mode_left_shift
-      ;; [:spacebar :return_or_enter]
-      ;; ; ←Left half types ⇧Key (also mod key isn't swallowed)
-      ;; [:grave_accent_and_tilde :!Sgrave_accent_and_tilde]
-      ;; [:1 :!R1] [:2 :!R2] [:3 :!R3] [:4 :!R4] [:5 :!R5]
-      ;; [:q :!Rq] [:w :!Rw] [:e :!Re] [:r :!Rr] [:t :!Rt]
-      ;; [:a :!Ra] [:s :!Rs] [:d :!Rd] [:f :!Rf] [:g :!Rg]
-      ;; [:z :!Rz] [:x :!Rx] [:c :!Rc] [:v :!Rv] [:b :!Rb]
+  ;; {:des "left shift mode maps" :rules [ :mode_left_shift
+  ;;     ;; [:spacebar :return_or_enter]
+  ;;     ;; ; ←Left half types ⇧Key (also mod key isn't swallowed)
+  ;;     ;; [:grave_accent_and_tilde :!Sgrave_accent_and_tilde]
+  ;;     ;; [:1 :!R1] [:2 :!R2] [:3 :!R3] [:4 :!R4] [:5 :!R5]
+  ;;     ;; [:q :!Rq] [:w :!Rw] [:e :!Re] [:r :!Rr] [:t :!Rt]
+  ;;     ;; [:a :!Ra] [:s :!Rs] [:d :!Rd] [:f :!Rf] [:g :!Rg]
+  ;;     ;; [:z :!Rz] [:x :!Rx] [:c :!Rc] [:v :!Rv] [:b :!Rb]
 
 
-      ; →Right half types ⎈Key (also mod key isn't swallowed)
-      ;; [:7 :!R7] [:8 :!R8] [:9 :!R9] [:0 :!R0]
-      [:u :4] [:i :5] [:o :6]
-      [:j :1] [:k :2] [:l :3]
-      ;; [:n :!Rn] [:m :!Rm] [:comma :!Rcomma] [:period :!Rperiod] [:slash :!Rslash]
-      ;; ;; [:delete_or_backspace :!Tdelete_or_backspace] [:return_or_enter :!Treturn_or_enter]
-      ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
-      ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
-      ]}
+  ;;     ; →Right half types ⎈Key (also mod key isn't swallowed)
+  ;;     ;; [:7 :!R7] [:8 :!R8] [:9 :!R9] [:0 :!R0]
+  ;;     [:u :4] [:i :5] [:o :6]
+  ;;     [:j :1] [:k :2] [:l :3]
+
+  ;;     [:##1 :!S1] [:##2 :!S2] [:##3 :!S3] [:##4 :!S4] [:##5 :!S5]
+  ;;     [:##q :!Sq] [:##w :!Sw] [:##e :!Se] [:##r :!Sr] [:##t :!St]
+  ;;     [:##a :!Sa] [:##s :!Ss] [:##d :!Sd] [:##f :!Sf] [:##g :!Sg]
+  ;;     [:##z :!Sz] [:##x :!Sx] [:##c :!Sc] [:##v :!Sv] [:##b :!Sb]
+
+  ;;     ;; ; →Right half types ⎈Key (also mod key isn't swallowed)
+  ;;     [:##6 :!S6] [:##7 :!S7] [:##8 :!S8] [:##9 :!S9] [:##0 :!S0] [:##hyphen :!Shyphen] [:##equal_sign :!Sequal_sign]
+  ;;     [:##y :!Sy] [:##p :!Sp] [:##open_bracket :!Sopen_bracket] [:##close_bracket :!Sclose_bracket]
+  ;;     [:h :!Sh] [:j :!Sj] [:k :!Sk] [:l :!Sl] [:##semicolon :!Ssemicolon] [:quote :!Squote] [:##backslash :!Sbackslash]
+  ;;     [:##n :!Sn] [:##m :!Sm] [:##comma :!Scomma] [:##period :!Speriod] [:##slash :!Sslash]
+  ;;     ;; [:n :!Rn] [:m :!Rm] [:comma :!Rcomma] [:period :!Rperiod] [:slash :!Rslash]
+  ;;     ;; ;; [:delete_or_backspace :!Tdelete_or_backspace] [:return_or_enter :!Treturn_or_enter]
+  ;;     ;; ;; [:left_arrow :!Tleft_arrow] [:right_arrow :!Tright_arrow] [:up_arrow :!Tup_arrow] [:down_arrow :!Tdown_arrow]
+  ;;     ;; ;; [:!Cleft_arrow :!CTleft_arrow] [:!TCm :!TCm]
+  ;;     ]}
 
 
   {:des "backslash to delete" :rules [
