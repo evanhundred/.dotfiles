@@ -1,3 +1,4 @@
+source ~/bash-wakatime/bash-wakatime.sh
 PS1='\[\e[38;5;215m\]\u\[\e[0m\]@\[\e[38;5;141m\]\h\[\e[0m\]:\[\e[38;5;123m\]\w\[\e[0m\]$\[\e[0m\] '
 
 # export PS1='\[\e[38;5;215m\]\u\[\e[m\]@[\e[38;5;141m\]\h\[\e[m\]:\[\e[38;5;123m\]\W\[\e[m\]$\[\e[m\] '
@@ -21,6 +22,8 @@ alias ll="ls -l"
 alias al="ls -al"
 
 alias c=clear
+
+alias getkb="cp ~/.config/karabiner.edn ."
 
 alias nyght="cd ~/aA/nyght"
 alias nyghtbes="DEBUG=backend:server npm run dev" # nyght backend start
