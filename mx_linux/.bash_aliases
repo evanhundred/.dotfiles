@@ -1,0 +1,9 @@
+alias c=clear
+alias ga="git add"
+alias gcm="git commit -m"
+alias gp="git push"
+alias gps="ga . && git commit --file .git/COMMIT_EDITMSG && gp"
+alias ..="cd .."
+alias yup="cd ~/yup"
+alias readfan="sensors | grep RPM"
+alias rs="redshift -x && redshift -O "
