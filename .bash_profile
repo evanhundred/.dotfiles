@@ -17,9 +17,9 @@ alias rt="source ~/.bash_profile"
 alias bpe="code ~/.bash_profile"
 # alias bcap="sudo bclm"
 
-alias la="ls -a"
+alias la="ls -A"
 alias ll="ls -l"
-alias al="ls -al"
+alias al="ls -Al"
 
 alias c=clear
 
