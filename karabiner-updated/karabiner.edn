@@ -79,7 +79,7 @@
         ; [:!Pk :up_arrow] [:!Pm :left_arrow] [:!Pcomma :down_arrow] [:!Pperiod :right_arrow]
         [:open_bracket :page_up] [:semicolon :page_down]
         [:close_bracket :home] [:quote :end]
-        [:slash :delete_forward]
+        [:slash :delete_forward] [:spacebar :return_or_enter]
 
         [:j :left_arrow] [:k :down_arrow] [:l :right_arrow] [:i :up_arrow]
 

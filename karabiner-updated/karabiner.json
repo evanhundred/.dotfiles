@@ -14204,6 +14204,19 @@
           "type" : "basic"
         }, {
           "from" : {
+            "key_code" : "spacebar"
+          },
+          "to" : [ {
+            "key_code" : "return_or_enter"
+          } ],
+          "conditions" : [ {
+            "name" : "mode_caps",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
             "key_code" : "j"
           },
           "to" : [ {
