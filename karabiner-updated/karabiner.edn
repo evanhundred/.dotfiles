@@ -1,0 +1,96 @@
+;; keychron V4 fn keybindings
+
+;; Keys	Function
+;; fn + esc `
+;; fn + 1	Screen Brightness Down
+;; fn + 2	Screen Brightness Up
+;; fn + 3	Mission Control (Mac mode) / Task View (Windows mode)
+;; fn + 4	Launchpad (Mac mode) / File Explorer (Windows mode)
+;; fn + 5	Keyboard Backlight Down
+;; fn + 6	Keyboard Backlight Up
+;; fn + 7	Rewind
+;; fn + 8	Play / Pause
+;; fn + 9	Fast Forward
+;; fn + 0	Sound: Volume Mute
+;; fn + -	Sound: Volume Down
+;; fn + =	Sound: Volume Up
+;; fn + backspace	RGB Mode Next
+;; fn + tab	Turn On / Off the Backlight
+;; fn + Q	RGB Mode Next
+;; fn + A	RGB Mode Previous
+;; fn + W	Keyboard Backlight Up
+;; fn + S	Keyboard Backlight Down
+;; fn + E	Hue Increase
+;; fn + D	Hue Decrease
+;; fn + R	Saturation Increase
+;; fn + F	Saturation Decrease
+;; fn + T	RGB Speed Increase
+;; fn + G	RGB Speed Decrease
+;; fn + P	Insert
+;; fn + L	Screen Shot
+;; fn + [	Page Up
+;; fn + ;	Page Down
+;; fn + ]	Home
+;; fn + "	End
+;; fn + K	Arrow Up
+;; fn + <	Arrow Down
+;; fn + M	Arrow Left
+;; fn + >	Arrow Right
+;; fn + ?	Delete
+;; fn + I	Menu (Windows mode)
+;; fn + O	Scrollock (Windows mode)
+;; fn + J + Z (long press for 3s)	Reset The Keyboard
+
+    ;; !  | means mandatory
+    ;; #  | means optional
+    ;; C  | left_command
+    ;; T  | left_control
+    ;; O  | left_option
+    ;; S  | left_shift
+    ;; F  | fn
+    ;; Q  | right_command
+    ;; W  | right_control
+    ;; E  | right_option
+    ;; R  | right_shift
+    ;; P  | caps_lock
+    ;; !! | mandatory command + control + optional + shift (hyper)
+    ;; ## | optional any
+
+
+{
+
+  :profiles {:goku {
+    :default true ;↓ delays can be set individually in mod-tap layer definitions if you want separate default values here
+    :sim  	189	; |  50|	simultaneous_threshold_milliseconds   	different from simlayers, this is for cases like [:a :b]
+    :alone	189	; |1000|	to_if_alone_timeout_milliseconds      	??? must be < than ↓:delay/:held to avoid the bug where mod-tap layer stays 1
+    :held 	190	; | 500|	to_if_held_down_threshold_milliseconds	should = ↓:delay for mod-tap layers
+    :delay	190	; |    |	to_delayed_action_delay_milliseconds  	should = ↑:held  for mod-tap layers
+    }
+  }
+
+  :main [
+    {:des "caps mode layer timing" :rules [
+	    [:caps_lock nil [                      ] ;mode_caps
+	    {:alone {:key :caps_lock :halt true} :delayed {:canceled {:key :caps_lock}} :held {:set["mode_caps" 1] :repeat false} :afterup {:set["mode_caps" 0]}
+	      :params {:alone 80 :held 81 :delay 81 :sim 80} }]
+	    ]}
+
+    {:des "caps arrow keys" :rules [ :mode_caps
+        ; [:!Pk :up_arrow] [:!Pm :left_arrow] [:!Pcomma :down_arrow] [:!Pperiod :right_arrow]
+        [:open_bracket :page_up] [:semicolon :page_down]
+        [:close_bracket :home] [:quote :end]
+        [:slash :delete_forward]
+
+        [:j :left_arrow] [:k :down_arrow] [:l :right_arrow] [:i :up_arrow]
+
+        ;; [:!Sspacebar :return_or_enter] [:!Rspacebar :return_or_enter]
+
+        ;; for alice v8
+        ;; [:!Tj :left_arrow] [:!Tk :down_arrow] [:!Tl :right_arrow] [:!Ti :up_arrow]
+        [:!Rtab :grave_accent_and_tilde]
+        [:!Rescape :!Rgrave_accent_and_tilde]
+
+      ]
+    }
+  ]
+}
